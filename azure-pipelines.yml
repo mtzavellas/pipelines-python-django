@@ -1,14 +1,16 @@
-# Python Django
-# Test a Django project on multiple versions of Python.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/python
+# Build Docker image for this app using Azure Pipelines
+# http://docs.microsoft.com/azure/devops/pipelines/languages/docker?view=vsts
 pool:
-  vmImage: 'Ubuntu 16.04'
+  vmImage: 'ubuntu-latest'
+  
+variables:
+  imageName: 'pythonsample:$(Build.BuildId)'
+  # define two more variables dockerId and dockerPassword in the build pipeline in UI
 
 steps:
 - task: UsePythonVersion@0
   inputs:
-    versionSpec: 3.5
+    versionSpec: 3.7
     architecture: 'x64'
 
 - task: PythonScript@0
@@ -19,7 +21,7 @@ steps:
       """Search all subdirectories for `manage.py`."""
       from glob import iglob
       from os import path
-      # Python >= 3.5
+      # Python >= 3.7
       manage_py = next(iglob(path.join('**', 'manage.py'), recursive=True), None)
       if not manage_py:
           raise SystemExit('Could not find a Django project')
@@ -44,3 +46,17 @@ steps:
   inputs:
     testResultsFiles: "**/TEST-*.xml"
     testRunTitle: 'Python $(PYTHON_VERSION)'
+
+# - script: |
+#     docker build -f Dockerfile -t $(dockerId).azurecr.io/$(imageName) .
+#     docker login -u $(dockerId) -p $pswd $(dockerid).azurecr.io
+#     docker push $(dockerId).azurecr.io/$(imageName)
+#   env:
+#     pswd: $(dockerPassword)
+#   displayName: 'Build and push Docker image'
+- task: Docker@2
+  displayName: Build an image
+  inputs:
+    repository: $(imageName)
+    command: build
+    Dockerfile: Dockerfile
