@@ -4,7 +4,7 @@ pool:
   vmImage: 'ubuntu-latest'
   
 variables:
-  imageName: 'pythonsample:$(Build.BuildId)'
+  imageName: 'pythonsample'
   # define two more variables dockerId and dockerPassword in the build pipeline in UI
 
 steps:
@@ -54,12 +54,9 @@ steps:
 #   env:
 #     pswd: $(dockerPassword)
 #   displayName: 'Build and push Docker image'
-- script: |
-    echo :$(Build.BuildId) $(imageName)
-  displayName: 'Echo Stuff'
-# - task: Docker@2
-#   displayName: Build an image
-#   inputs:
-#     repository: $(imageName)
-#     command: build
-#     Dockerfile: Dockerfile
+- task: Docker@2
+  displayName: Build an image
+  inputs:
+    repository: $(imageName)
+    command: build
+    Dockerfile: Dockerfile
