@@ -54,9 +54,12 @@ steps:
 #   env:
 #     pswd: $(dockerPassword)
 #   displayName: 'Build and push Docker image'
-- task: Docker@2
-  displayName: Build an image
-  inputs:
-    repository: $(imageName)
-    command: build
-    Dockerfile: Dockerfile
+- script: |
+    echo :$(Build.BuildId) $(imageName)
+  displayName: 'Echo Stuff'
+# - task: Docker@2
+#   displayName: Build an image
+#   inputs:
+#     repository: $(imageName)
+#     command: build
+#     Dockerfile: Dockerfile
